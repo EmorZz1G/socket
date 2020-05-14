@@ -2,7 +2,8 @@ package emor.socket.window;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
- 
+import java.net.UnknownHostException;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -35,7 +36,7 @@ public class MyClientWindow extends JFrame {
 		txt.setText("准备...");
  
 		txtip = new JTextField();
-		txtip.setText("127.0.0.1");
+		txtip.setText("112.74.89.58");
 		txtip.setColumns(10);
 
 		//连接服务器
@@ -43,7 +44,12 @@ public class MyClientWindow extends JFrame {
 		btnConnect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ConnectionManager.getChatManager().connect(txtip.getText());
+				try {
+					ConnectionManager.getChatManager().connect(txtip.getText());
+				} catch (UnknownHostException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		

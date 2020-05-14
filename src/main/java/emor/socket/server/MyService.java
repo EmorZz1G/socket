@@ -11,12 +11,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import emor.socket.user.User;
 
 /**
  * Created by Emor
@@ -36,6 +33,23 @@ public class MyService {
 			// 开启服务，设置指定端口
 			server = new ServerSocket(8888);
 			System.out.println("服务开启，等待客户端连接中...");
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					while(true) {
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						for(Socket s :clients) {
+							System.out.println(s);
+						}
+						System.out.println("当前在线用户"+clients.size()+"个");
+					}
+				}
+			},"link-num").start();
 			// 循环监听
 			while (true) {
 				// 等待客户端进行连接
@@ -46,8 +60,9 @@ public class MyService {
 				System.out.println("客户端 [" + client.getRemoteSocketAddress() + "]连接成功，当前在线用户" + clients.size() + "个");
 				clientListLock.unlock();
 				// 每一个客户端开启一个线程处理消息
-				new MessageListener(client).start();
+				new MessageListener(client,"msg").start();
 //				new Thread(new HeartCheckServiceImpl(client,new User(null,client.getPort()),clients,clientListLock)).start();  
+				
 			}
 		} catch (IOException e) {
 			// log
@@ -83,32 +98,17 @@ public class MyService {
 		public MessageListener(Socket socket) {
 			this.client = socket;
 		}
-
+		public MessageListener(Socket socket,String name) {
+			this.client = socket;
+			setName(name);
+		}
 		@Override
 		public void run() {
 			try {
 				// 每个用户连接上了，就发送一条系统消息（类似于广播）
 				sendMsg(0,
 						"[系统消息]：欢迎" + client.getRemoteSocketAddress() + "来到聊天室，当前共有" + (clients.size()) + "人在聊天");
-				new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						while(true) {
-							try {
-								Thread.sleep(10000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							for(Socket s :clients) {
-								System.out.println(s);
-							}
-							System.out.println("当前在线用户"+clients.size()+"个");
-						}
-					}
-				}) {
-					
-				}.start();
+				
 				// 循环监听消息
 				while (true) {
 					try {
@@ -122,10 +122,12 @@ public class MyService {
 							}
 						}
 					}catch (Exception e) {
-						// TODO: handle exception
+						e.printStackTrace();
 						if(clients.contains(client)) {
 							clients.remove(client);
 							client.close();
+							this.stop();
+							return;
 						}
 					} finally{
 						
@@ -224,7 +226,6 @@ public class MyService {
 					bos.flush();
 
 				} catch (Exception e) {
-					// TODO: handle exception
 				}
 
 			}
@@ -239,13 +240,8 @@ public class MyService {
 		private String receiveMsg() throws IOException {
 			is = client.getInputStream();
 			isr = new InputStreamReader(is);
-			try {
-				br = new BufferedReader(isr);
-			}catch (Exception e) {
-				// TODO: handle exception
-			} finally{
-				
-			}
+
+			br = new BufferedReader(isr);
 			return br.readLine();
 		}
 	}

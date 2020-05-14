@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -25,6 +26,7 @@ public class ConnectionManager {
 	MyClientWindow window;// 为了能在界面上显示服务器发来的信息，就需要传一个MainWindow的引用进来
 	Socket server;
 	private String IP;
+	private InetAddress ina;
 	BufferedReader bReader;
 	PrintWriter pWriter;
 	BufferedOutputStream bos;
@@ -57,14 +59,15 @@ public class ConnectionManager {
 		this.window = window;
 	}
 
-	public void connect(String ip) {
-		this.IP = ip;
+	public void connect(String dns) throws UnknownHostException {
+		InetAddress ina = InetAddress.getByName("server.natappfree.cc");
+		this.ina = ina;
 		new Thread() {
 			@Override
 			public void run() {
 				// 实现网络方法
 				try {
-					server = new Socket(IP, 8888);
+					server = new Socket(ina, 36217);
 					sendHeart = new sendHeart(server);
 					sendHeart.setDaemon(true);
 //					sendHeart.start();
@@ -112,7 +115,7 @@ public class ConnectionManager {
 //      br = new BufferedReader(isr);
 		bis = new BufferedInputStream(is);
 		byte[] buffer = new byte[1024 * 8];
-		int len = 0;
+		int len = 1;
 //      StringBuilder sb = new StringBuilder("");
 		len = bis.read(buffer);
 //      return new String(buffer);

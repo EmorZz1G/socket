@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Scanner;
@@ -41,7 +42,10 @@ public class MyClient {
 	private void start() {
 		try {
 			// 连接服务器
-			server = new Socket("127.0.0.1", 8888);
+			String dns = "server.natappfree.cc";
+			InetAddress ina = InetAddress.getByName(dns);
+			System.out.println(ina);
+			server = new Socket(dns, 36217);
 			server.setKeepAlive(true);
 			server.setSoTimeout(0);
 			user = new User(null, server.getLocalPort());
