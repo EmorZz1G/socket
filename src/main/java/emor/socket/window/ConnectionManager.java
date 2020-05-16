@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -60,14 +61,19 @@ public class ConnectionManager {
 	}
 
 	public void connect(String dns) throws UnknownHostException {
-		InetAddress ina = InetAddress.getByName("server.natappfree.cc");
+		String txt =window.getText();
+		System.out.println(txt);
+		String[] socket = txt.split(":");
+		System.out.println(socket[0]);
+		InetAddress ina = InetAddress.getByName(socket[0]);
+		int port = Integer.parseInt(socket[1]);
 		this.ina = ina;
 		new Thread() {
 			@Override
 			public void run() {
 				// 实现网络方法
 				try {
-					server = new Socket(ina, 36217);
+					server = new Socket(ina, port);
 					sendHeart = new sendHeart(server);
 					sendHeart.setDaemon(true);
 //					sendHeart.start();
@@ -90,6 +96,7 @@ public class ConnectionManager {
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (SocketException e) {
+					e.printStackTrace();
 					System.out.println("服务器已停止运行");
 					window.appendText("服务器已停止运行.");
 				} catch (IOException e) {
@@ -100,7 +107,7 @@ public class ConnectionManager {
 		}.start();
 	}
 
-	public void send(String sendMsg) {
+	public void send(String sendMsg)  {
 		if (pWriter != null) {
 			pWriter.write(sendMsg + "\n");
 			pWriter.flush();

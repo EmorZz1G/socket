@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 
 public class User implements Serializable{
 	/**
@@ -40,13 +41,19 @@ public class User implements Serializable{
 		InetAddress ina = null;
 		try {
 			ina = InetAddress.getByName("server.natappfree.cc");
-			Socket s = new Socket(ina,36217);
+//			Socket s = new Socket(ina,36217);
 			System.out.println("he");
-			System.out.println(s.isConnected());
-			OutputStream os = s.getOutputStream();
-			os.write("nihao".getBytes());
-			os.flush();
+//			System.out.println(s.isConnected());
+//			OutputStream os = s.getOutputStream();
+//			os.write("nihao".getBytes());
+//			os.flush();
 			System.out.println(ina);
+			System.out.println(System.getProperty("file.encoding"));
+			System.out.println(System.getProperty("user.language"));
+			System.out.println(Charset.defaultCharset());
+			String s = "你还没发生的";
+			String t = new String(s.getBytes("utf8"),"utf8");
+			System.out.println(t);
 			Thread.sleep(10000);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

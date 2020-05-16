@@ -177,10 +177,11 @@ public class MyService {
 						os = socket.getOutputStream();
 //					pw = new PrintWriter(os);
 //					pw.println(msg);// 这里需要特别注意，对方用readLine获取消息，就必须用print而不能用write，否则会导致消息获取不了
+						//如果要用write，那么要在末尾添加\n，一行已经结束，这样才不会阻塞
 //					pw.flush();
 						bos = new BufferedOutputStream(os);
 						bos.write(msg.getBytes());
-						bos.flush();
+ 						bos.flush();
 					} catch (Exception e) {
 						continue;
 					}

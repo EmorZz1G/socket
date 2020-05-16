@@ -36,7 +36,7 @@ public class MyClientWindow extends JFrame {
 		txt.setText("准备...");
  
 		txtip = new JTextField();
-		txtip.setText("112.74.89.58");
+		txtip.setText("127.0.0.1:8888");
 		txtip.setColumns(10);
 
 		//连接服务器
@@ -104,6 +104,9 @@ public class MyClientWindow extends JFrame {
 	/* 客户端发送的内容添加到中间的txt控件中 */
 	public void appendText(String in) {
 		txt.append("\n" + in);
+	}
+	public String getText() {
+		return txtip.getText();
 	}
 }
 
